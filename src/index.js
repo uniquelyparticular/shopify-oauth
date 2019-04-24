@@ -1,22 +1,34 @@
-const { json, send } = require('micro')
+const { createClient: shopifyClient } = require('@particular./shopify-request')
+const { send } = require('micro')
 const redirect = require('micro-redirect')
 const cors = require('micro-cors')()
 const { router, post, get } = require('microrouter')
-
 const crypto = require('crypto')
-const cookie = require('cookie')
 const nonce = require('nonce')()
 const querystring = require('querystring')
 const request = require('request-promise')
-const { createClient: shopifyClient } = require('@particular./shopify-request')
+const firebase = require('firebase')
+require('firebase/firestore')
 
+const _firebaseConfig = {
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: `${process.env.FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  projectId: process.env.FIREBASE_PROJECT_ID
+}
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(_firebaseConfig)
+}
+
+const firestore = firebase.firestore()
 const apiKey = process.env.SHOPIFY_API_KEY
 const apiSecret = process.env.SHOPIFY_API_SECRET
-const scopes = process.env.SHOPIFY_OAUTH_SCOPES
 const deployedURI = process.env.DEPLOYED_URI
 
 const authURL = (shopName, nonce) => {
-  return `https://${shopName}/admin/oauth/authorize?client_id=${apiKey}&scope=${scopes}&redirect_uri=${deployedURI}/auth/callback&state=${nonce}`
+  return `https://${shopName}/admin/oauth/authorize?client_id=${apiKey}&scope=${
+    process.env.SHOPIFY_OAUTH_SCOPES
+  }&redirect_uri=${deployedURI}/auth/callback&state=${nonce}`
 }
 
 const _toJSON = error => {
@@ -48,6 +60,15 @@ process.on('unhandledRejection', (reason, p) => {
   )
 })
 
+const getSecureParam = (
+  params,
+  paramName,
+  regexFilter = /\.myshopify\.com$/
+) => {
+  const paramVal = params[paramName]
+  return paramVal && regexFilter.test(paramVal) ? paramVal : null
+}
+
 const notFound = async (req, res) =>
   send(res, 404, { error: 'Route not found' })
 const notSupported = async (req, res) =>
@@ -63,13 +84,28 @@ module.exports = cors(
       }
 
       try {
-        const shop = req.query.shop
+        const { hmac } = req.query
+        if (!hmac) {
+          return send(res, 403, {
+            error: 'Missing hmac parameter'
+          })
+        }
+        const shop = getSecureParam(req.query, 'shop')
         if (shop) {
           const state = nonce()
-          console.log('state', state)
-          res.setHeader('Set-Cookie', cookie.serialize('state', state))
-          console.log('installURL', authURL(shop, state))
-          return redirect(res, 302, authURL(shop, state))
+          return firestore
+            .collection('OAuth')
+            .doc(shop)
+            .set({ nonce: state })
+            .then(() => {
+              console.log('state', state)
+              console.log('installURL', authURL(shop, state))
+              return redirect(res, 302, authURL(shop, state))
+            })
+            .catch(error => {
+              const jsonError = _toJSON(error)
+              return send(res, error.statusCode || 500, jsonError)
+            })
         } else {
           return send(res, 403, {
             error:
@@ -78,7 +114,7 @@ module.exports = cors(
         }
       } catch (error) {
         const jsonError = _toJSON(error)
-        return send(res, 500, jsonError)
+        return send(res, error.statusCode || 500, jsonError)
       }
     }),
     get('/auth/callback', async (req, res) => {
@@ -88,74 +124,90 @@ module.exports = cors(
       }
 
       try {
-        const { shop, hmac, code, state } = req.query
-        const stateCookie = cookie.parse(req.headers.cookie).state
+        const { hmac, code, state } = req.query
+        const shop = getSecureParam(req.query, 'shop')
 
-        if (state !== stateCookie) {
-          return send(res, 403, { error: 'Request origin cannot be verified' })
-        }
+        if (shop && hmac && code && state) {
+          const useOnce = firestore.collection('OAuth').doc(shop)
 
-        if (shop && hmac && code) {
-          // Validate request is from Shopify
-          const map = Object.assign({}, req.query)
-          delete map['signature']
-          delete map['hmac']
-          const message = querystring.stringify(map)
-          const providedHmac = Buffer.from(hmac, 'utf-8')
-          const generatedHash = Buffer.from(
-            crypto
-              .createHmac('sha256', apiSecret)
-              .update(message)
-              .digest('hex'),
-            'utf-8'
-          )
-          let hashEqual = false
+          return useOnce
+            .get()
+            .then(previousState => {
+              if (state != previousState.data().nonce) {
+                return send(res, 403, {
+                  error: 'Request origin cannot be verified'
+                })
+              }
+              return useOnce.delete().then(() => {
+                // Validate request is from Shopify
+                const map = Object.assign({}, req.query)
+                delete map['signature']
+                delete map['hmac']
+                const message = querystring.stringify(map)
+                const providedHmac = Buffer.from(hmac, 'utf-8')
+                const generatedHash = Buffer.from(
+                  crypto
+                    .createHmac('sha256', apiSecret)
+                    .update(message)
+                    .digest('hex'),
+                  'utf-8'
+                )
+                let hashEqual = false
 
-          try {
-            hashEqual = crypto.timingSafeEqual(generatedHash, providedHmac)
-          } catch (e) {
-            hashEqual = false
-          }
+                try {
+                  hashEqual = crypto.timingSafeEqual(
+                    generatedHash,
+                    providedHmac
+                  )
+                } catch (e) {
+                  hashEqual = false
+                }
 
-          if (!hashEqual) {
-            return send(res, 403, { error: 'HMAC validation failed' })
-          }
+                if (!hashEqual) {
+                  return send(res, 403, { error: 'HMAC validation failed' })
+                }
 
-          //TODO: move this into shopifyClient API as .initialize or .authenticate method
-          // Exchange temporary code for a permanent access token
-          const accessTokenRequestUrl =
-            'https://' + shop + '/admin/oauth/access_token'
-          const accessTokenPayload = {
-            grant_type: 'authorization_code',
-            client_id: apiKey,
-            client_secret: apiSecret,
-            code,
-            redirect_uri: `${deployedURI}/auth/callback`
-          }
+                //TODO: move this into shopifyClient API as .initialize or .authenticate method
+                // Exchange temporary code for a permanent access token
+                const accessTokenRequestUrl =
+                  'https://' + shop + '/admin/oauth/access_token'
+                const accessTokenPayload = {
+                  grant_type: 'authorization_code',
+                  client_id: apiKey,
+                  client_secret: apiSecret,
+                  code,
+                  redirect_uri: `${deployedURI}/auth/callback`
+                }
 
-          return request
-            .post(accessTokenRequestUrl, { json: accessTokenPayload })
-            .then(accessTokenResponse => {
-              const accessToken = accessTokenResponse.access_token
+                return request
+                  .post(accessTokenRequestUrl, { json: accessTokenPayload })
+                  .then(accessTokenResponse => {
+                    const accessToken = accessTokenResponse.access_token
 
-              console.log('accessToken', accessToken)
+                    console.log('accessToken', accessToken)
 
-              const shopify = new shopifyClient({
-                store_name: 'particulartest',
-                access_token: accessToken
+                    const shopify = new shopifyClient({
+                      store_name: 'particulartest',
+                      access_token: accessToken
+                    })
+
+                    return shopify
+                      .get('admin/shop.json')
+                      .then(shopResponse => {
+                        // console.log('shopResponse', shopResponse)
+
+                        return send(res, 200, accessTokenResponse)
+                      })
+                      .catch(error => {
+                        const jsonError = _toJSON(error)
+                        return send(res, error.statusCode || 500, jsonError)
+                      })
+                  })
+                  .catch(error => {
+                    const jsonError = _toJSON(error)
+                    return send(res, error.statusCode || 500, jsonError)
+                  })
               })
-
-              return shopify
-                .get('admin/shop.json')
-                .then(shopResponse => {
-                  // console.log('shopResponse', shopResponse)
-
-                  return send(res, 200, accessTokenResponse)
-                })
-                .catch(error => {
-                  const jsonError = _toJSON(error)
-                  return send(res, error.statusCode || 500, jsonError)
-                })
             })
             .catch(error => {
               const jsonError = _toJSON(error)
