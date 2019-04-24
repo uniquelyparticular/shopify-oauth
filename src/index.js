@@ -148,7 +148,7 @@ module.exports = cors(
               return shopify
                 .get('admin/shop.json')
                 .then(shopResponse => {
-                  console.log('shopResponse', shopResponse)
+                  // console.log('shopResponse', shopResponse)
 
                   return send(res, 200, accessTokenResponse)
                 })
