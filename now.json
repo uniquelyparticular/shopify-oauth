@@ -6,7 +6,9 @@
     "DEPLOYED_URI": "https://particular-demo-shopify-oauth.now.sh",
     "SHOPIFY_OAUTH_SCOPES": "@demo-shopify-oauth-scopes",
     "SHOPIFY_API_KEY": "@demo-shopify-api-key",
-    "SHOPIFY_API_SECRET": "@demo-shopify-api-secret"
+    "SHOPIFY_API_SECRET": "@demo-shopify-api-secret",
+    "FIREBASE_API_KEY": "@demo-firebase-api-key",
+    "FIREBASE_PROJECT_ID": "@demo-firebase-project-id"
   },
   "routes": [{ "src": "/(.*)", "dest": "/src" }],
   "builds": [

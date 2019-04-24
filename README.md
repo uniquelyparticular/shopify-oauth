@@ -8,9 +8,9 @@ Built with [Micro](https://github.com/zeit/micro)! 🤩
 
 ## 🛠 Setup
 
-A [Shopify](https://shopify.com) account is needed for this to function.
+Both a [Shopify](https://shopify.com) _and_ [Firebase](https://firebase.google.com) account are needed for this to function.
 
-Start ngrok (change ngrok port below from 3000 if yarn dev deployed locally on different port above)
+Start ngrok (change ngrok port below from 3000 if going to run yarn dev on different port or if already in use)
 
 ```bash
 ngrok http 3000
@@ -18,20 +18,28 @@ ngrok http 3000
 
 Make a note of the https `ngrok URL` provided.
 
+---
+
 Create a `.env` at the project root with the following credentials:
 
 ```dosini
 DEPLOYED_URI
+FIREBASE_API_KEY
+FIREBASE_PROJECT_ID
 SHOPIFY_OAUTH_SCOPES
 SHOPIFY_API_KEY
 SHOPIFY_API_SECRET
 ```
 
+---
+
 `DEPLOYED_URI` should be set to your `ngrok URL` from above (ie. `https://312a9670.ngrok.io`)
 
-`SHOPIFY_OAUTH_SCOPES` can be set to any of the following values: `read_products`,`read_product_listings`,`read_customers`,`write_customers`,`write_orders,write_draft_orders`,`write_shipping`,`write_checkouts`,`read_shopify_payments_disputes`,`unauthenticated_read_product_listings`,`unauthenticated_write_checkouts`,`unauthenticated_write_customers`.
+Open the [Firebase Console](https://console.firebase.google.com) to create a new Project (or you can use an existing one) to use for storing temporary nonce date. Click `Add Project`, enter anything in the `Project Name` field then click `Create Project`. When you receive the 'Your new project is ready' confirmation, click `Continue`. Under the 'Get started by adding Firebase to your app', click the icon for `Web` < /> and then in that popup you will find your configuration information to use for `FIREBASE_API_KEY` (apiKey) and `FIREBASE_PROJECT_ID` (projectId).
 
 ---
+
+`SHOPIFY_OAUTH_SCOPES` can be set to any of the following values: `read_products`,`read_product_listings`,`read_customers`,`write_customers`,`write_orders,write_draft_orders`,`write_shipping`,`write_checkouts`,`read_shopify_payments_disputes`,`unauthenticated_read_product_listings`,`unauthenticated_write_checkouts`,`unauthenticated_write_customers`.
 
 Navigate to your [Shopify Partner Dashboard](https://partners.shopify.com/<<PartnerId>>/apps)'s App section and clicking `Create App`.
 
@@ -76,7 +84,7 @@ const { createClient } = require('@particular./shopify-request')
 
 const shopify = new createClient({
   store_name: '...', //Shopify Store Name
-  access_token: '...' //Shopify OAuth token received after registering as Public App and installing to Store above
+  access_token: access_token //Shopify OAuth token received after registering as Public App and installing to Store above
 })
 ```
 
