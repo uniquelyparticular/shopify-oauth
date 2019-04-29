@@ -5,7 +5,6 @@ const cors = require('micro-cors')()
 const { router, post, get } = require('microrouter')
 const crypto = require('crypto')
 const nonce = require('nonce')()
-const querystring = require('querystring')
 const request = require('request-promise')
 const firebase = require('firebase')
 require('firebase/firestore')
@@ -140,10 +139,21 @@ module.exports = cors(
               }
               return useOnce.delete().then(() => {
                 // Validate request is from Shopify
-                const map = Object.assign({}, req.query)
-                delete map['signature']
-                delete map['hmac']
-                const message = querystring.stringify(map)
+                const params = req.query
+                const kvpairs = []
+                for (var key in params) {
+                  if (key != 'hmac' && key != 'signature') {
+                    kvpairs.push(
+                      key.replace(['%', '&', '='], ['%25', '%26', '%3D']) +
+                        '=' +
+                        params[key].replace(
+                          ['%', '&', '='],
+                          ['%25', '%26', '%3D']
+                        )
+                    )
+                  }
+                }
+                const message = kvpairs.sort().join('&')
                 const providedHmac = Buffer.from(hmac, 'utf-8')
                 const generatedHash = Buffer.from(
                   crypto
