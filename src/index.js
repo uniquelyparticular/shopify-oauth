@@ -5,6 +5,7 @@ const cors = require('micro-cors')()
 const { router, post, get } = require('microrouter')
 const crypto = require('crypto')
 const nonce = require('nonce')()
+const querystring = require('querystring')
 const request = require('request-promise')
 const firebase = require('firebase')
 require('firebase/firestore')
@@ -97,8 +98,8 @@ module.exports = cors(
             .doc(shop)
             .set({ nonce: state })
             .then(() => {
-              console.log('state', state)
-              console.log('installURL', authURL(shop, state))
+              // console.log('state', state)
+              // console.log('installURL', authURL(shop, state))
               return redirect(res, 302, authURL(shop, state))
             })
             .catch(error => {
@@ -139,21 +140,18 @@ module.exports = cors(
               }
               return useOnce.delete().then(() => {
                 // Validate request is from Shopify
-                const params = req.query
-                const kvpairs = []
-                for (var key in params) {
-                  if (key != 'hmac' && key != 'signature') {
-                    kvpairs.push(
-                      key.replace(['%', '&', '='], ['%25', '%26', '%3D']) +
-                        '=' +
-                        params[key].replace(
-                          ['%', '&', '='],
-                          ['%25', '%26', '%3D']
-                        )
-                    )
-                  }
-                }
-                const message = kvpairs.sort().join('&')
+                // console.log('req.query',req.query)
+                const params = {}
+                Object.keys(req.query)
+                  .sort()
+                  .forEach(key => {
+                    params[key] = req.query[key]
+                  })
+                delete params['signature']
+                delete params['hmac']
+                const message = querystring.stringify(params)
+
+                // console.log('message',message)
                 const providedHmac = Buffer.from(hmac, 'utf-8')
                 const generatedHash = Buffer.from(
                   crypto
@@ -194,7 +192,7 @@ module.exports = cors(
                   .then(accessTokenResponse => {
                     const accessToken = accessTokenResponse.access_token
 
-                    console.log('accessToken', accessToken)
+                    // console.log('accessToken', accessToken)
 
                     const shopify = new shopifyClient({
                       store_name: 'particulartest',
