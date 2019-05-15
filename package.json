@@ -36,7 +36,7 @@
   "dependencies": {
     "@particular./shopify-request": "^1.2.0",
     "crypto": "^1.0.1",
-    "firebase": "^5.10.0",
+    "firebase": "^6.0.0",
     "micro": "^9.3.3",
     "micro-cors": "^0.1.1",
     "micro-redirect": "^1.0.0",
