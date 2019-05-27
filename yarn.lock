@@ -507,10 +507,10 @@
     universal-user-agent "^2.0.0"
     url-template "^2.0.8"
 
-"@particular./shopify-request@^1.3.2":
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/@particular./shopify-request/-/shopify-request-1.3.2.tgz#2e267dc29921b66ebb8be487086b10fd7cee0821"
-  integrity sha512-mac4rZSgzJJqmhuPu1jPLZEZd4KE/4KNxQFp5go+7vFZmteCmrJuwq093Bz8W4Lm8AJGyvWPnP/CN86L3s42zQ==
+"@particular./shopify-request@1.3.3":
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/@particular./shopify-request/-/shopify-request-1.3.3.tgz#2461841c7cf2d6221bdce942066f3b3bbc7b565b"
+  integrity sha512-G2JvhOXJD23lgNbcTxc/htGxDGr/jkySvtNdWnw6ZZMO4qJh+BfgImWLIORSTAky27kMSyuQbDrV0EN6yTNfQA==
   dependencies:
     cross-fetch "3.0.3"
 
@@ -1798,7 +1798,7 @@ crypto-random-string@^1.0.0:
   resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-1.0.0.tgz#a230f64f568310e1498009940790ec99545bca7e"
   integrity sha1-ojD2T1aDEOFJgAmUB5DsmVRbyn4=
 
-crypto@^1.0.1:
+crypto@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/crypto/-/crypto-1.0.1.tgz#2af1b7cad8175d24c8a1b0778255794a21803037"
   integrity sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==
@@ -2477,7 +2477,7 @@ find-versions@^3.0.0:
     array-uniq "^2.1.0"
     semver-regex "^2.0.0"
 
-firebase@^6.0.4:
+firebase@6.0.4:
   version "6.0.4"
   resolved "https://registry.yarnpkg.com/firebase/-/firebase-6.0.4.tgz#fe4696c06e8dfb90c875681bfe8b1a3622f7d5ee"
   integrity sha512-y/A30wf9MQU4Ca/2WUiPdCNWCB/3WMFgwrqmOCV5NDK2tkPC5Ls7uswTzsx9eWMlj4FvqbmbDpXlgio24ePVhw==
@@ -4412,7 +4412,7 @@ merge2@^1.2.3:
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.2.3.tgz#7ee99dbd69bb6481689253f018488a1b902b0ed5"
   integrity sha512-gdUU1Fwj5ep4kplwcmftruWofEFt6lfpkkr3h860CXbAB9c3hGb55EOL2ali0Td5oebvW0E1+3Sr+Ur7XfKpRA==
 
-micro-cors@^0.1.1:
+micro-cors@0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/micro-cors/-/micro-cors-0.1.1.tgz#af7a480182c114ffd1ada84ad9dffc52bb4f4054"
   integrity sha512-6WqIahA5sbQR1Gjexp1VuWGFDKbZZleJb/gy1khNGk18a6iN1FdTcr3Q8twaxkV5H94RjxIBjirYbWCehpMBFw==
@@ -4436,12 +4436,12 @@ micro-dev@3.0.0:
     pretty-error "2.1.1"
     string-length "2.0.0"
 
-micro-redirect@^1.0.0:
+micro-redirect@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/micro-redirect/-/micro-redirect-1.0.0.tgz#aef703984f4ee46cfbbbfe2281cacc6f370d669e"
   integrity sha1-rvcDmE9O5Gz7u/4igcrMbzcNZp4=
 
-micro@^9.3.4:
+micro@9.3.4:
   version "9.3.4"
   resolved "https://registry.yarnpkg.com/micro/-/micro-9.3.4.tgz#745a494e53c8916f64fb6a729f8cbf2a506b35ad"
   integrity sha512-smz9naZwTG7qaFnEZ2vn248YZq9XR+XoOH3auieZbkhDL4xLOxiE+KqG8qqnBeKfXA9c1uEFGCxPN1D+nT6N7w==
@@ -4470,7 +4470,7 @@ micromatch@^3.1.10, micromatch@^3.1.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.2"
 
-microrouter@^3.1.3:
+microrouter@3.1.3:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/microrouter/-/microrouter-3.1.3.tgz#1e45df77d3e2d773be5da129cfc7d5e6e6c86f4e"
   integrity sha1-HkXfd9Pi13O+XaEpz8fV5ubIb04=
@@ -4804,7 +4804,7 @@ node-pre-gyp@^0.13.0:
     semver "^5.3.0"
     tar "^4"
 
-nonce@^1.0.4:
+nonce@1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/nonce/-/nonce-1.0.4.tgz#ee7302ade8c1bef476f301b8c91f5cc51a487612"
   integrity sha1-7nMCrejBvvR28wG4yR9cxRpIdhI=
@@ -5743,7 +5743,7 @@ query-string@^6.1.0:
     split-on-first "^1.0.0"
     strict-uri-encode "^2.0.0"
 
-querystring@^0.2.0:
+querystring@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
   integrity sha1-sgmEkgO7Jd+CDadW50cAWHhSFiA=
@@ -6025,7 +6025,7 @@ request-promise-native@^1.0.5:
     stealthy-require "^1.1.1"
     tough-cookie "^2.3.3"
 
-request-promise@^4.2.4:
+request-promise@4.2.4:
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/request-promise/-/request-promise-4.2.4.tgz#1c5ed0d71441e38ad58c7ce4ea4ea5b06d54b310"
   integrity sha512-8wgMrvE546PzbR5WbYxUQogUnUDfM0S7QIFZMID+J73vdFARkFy+HElj4T+MWYhpXwlLp0EQ8Zoj8xUA0he4Vg==
