@@ -1,9 +1,10 @@
 {
+  "version": 2,
   "name": "demo-shopify-oauth",
-  "alias": "particular-demo-shopify-oauth.now.sh",
+  "alias": "particular-shopify-oauth.now.sh",
   "env": {
     "NODE_ENV": "production",
-    "DEPLOYED_URI": "https://particular-demo-shopify-oauth.now.sh",
+    "DEPLOYED_URI": "https://particular-shopify-oauth.now.sh",
     "SHOPIFY_OAUTH_SCOPES": "@demo-shopify-oauth-scopes",
     "SHOPIFY_API_KEY": "@demo-shopify-api-key",
     "SHOPIFY_API_SECRET": "@demo-shopify-api-secret",
