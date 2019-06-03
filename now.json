@@ -8,8 +8,10 @@
     "SHOPIFY_OAUTH_SCOPES": "@demo-shopify-oauth-scopes",
     "SHOPIFY_API_KEY": "@demo-shopify-api-key",
     "SHOPIFY_API_SECRET": "@demo-shopify-api-secret",
-    "FIREBASE_API_KEY": "@demo-firebase-api-key",
-    "FIREBASE_PROJECT_ID": "@demo-firebase-project-id"
+    "FIREBASE_PROJECT_ID": "@particular-firebase-project-id",
+    "FIREBASE_CLIENT_ID": "@particular-firebase-client-id",
+    "FIREBASE_PRIVATE_KEY_ID": "@particular-firebase-pk-id",
+    "FIREBASE_PRIVATE_KEY": "@particular-firebase-pk"
   },
   "routes": [{ "src": "/(.*)", "dest": "/src" }],
   "builds": [

@@ -7,20 +7,41 @@ const crypto = require('crypto')
 const nonce = require('nonce')()
 const querystring = require('querystring')
 const request = require('request-promise')
-const firebase = require('firebase')
-require('firebase/firestore')
+const admin = require('firebase-admin')
 
 const _firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: `${process.env.FIREBASE_PROJECT_ID}.firebaseapp.com`,
-  projectId: process.env.FIREBASE_PROJECT_ID
+  type: 'service_account',
+  project_id: process.env.FIREBASE_PROJECT_ID,
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: `-----BEGIN PRIVATE KEY-----${
+    process.env.FIREBASE_PRIVATE_KEY
+  }-----END PRIVATE KEY-----\n`.replace(/\\n/g, '\n'),
+  client_email: `firebase-adminsdk-3gpvn@${
+    process.env.FIREBASE_PROJECT_ID
+  }.iam.gserviceaccount.com`,
+  client_id: process.env.FIREBASE_CLIENT_ID,
+  auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+  token_uri: 'https://oauth2.googleapis.com/token',
+  auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
+  client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-3gpvn%40${
+    process.env.FIREBASE_PROJECT_ID
+  }.iam.gserviceaccount.com`
 }
 
-if (!firebase.apps.length) {
-  firebase.initializeApp(_firebaseConfig)
-}
+// console.log('process.env.FIREBASE_CLIENT_ID',process.env.FIREBASE_CLIENT_ID)
+// console.log('process.env.FIREBASE_PROJECT_ID',process.env.FIREBASE_PROJECT_ID)
+// console.log('process.env.FIREBASE_PRIVATE_KEY_ID',process.env.FIREBASE_PRIVATE_KEY_ID)
+// console.log('process.env.FIREBASE_PRIVATE_KEY',process.env.FIREBASE_PRIVATE_KEY)
+// console.log(`_firebaseConfig: ${JSON.stringify(_firebaseConfig)}`)
 
-const firestore = firebase.firestore()
+if (!admin.apps.length) {
+  const admin = require('firebase-admin')
+  admin.initializeApp({
+    credential: admin.credential.cert(_firebaseConfig),
+    databaseURL: `https://${_firebaseConfig.project_id}.firebaseio.com`
+  })
+}
+const firestore = admin.firestore()
 const apiKey = process.env.SHOPIFY_API_KEY
 const apiSecret = process.env.SHOPIFY_API_SECRET
 const deployedURI = process.env.DEPLOYED_URI
