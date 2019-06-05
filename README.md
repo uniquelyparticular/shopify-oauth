@@ -25,8 +25,10 @@ Create a `.env` at the project root with the following credentials:
 
 ```dosini
 DEPLOYED_URI
-FIREBASE_API_KEY
 FIREBASE_PROJECT_ID
+FIREBASE_CLIENT_ID
+FIREBASE_PRIVATE_KEY_ID
+FIREBASE_PRIVATE_KEY
 SHOPIFY_OAUTH_SCOPES
 SHOPIFY_API_KEY
 SHOPIFY_API_SECRET
@@ -36,7 +38,17 @@ SHOPIFY_API_SECRET
 
 `DEPLOYED_URI` should be set to your `ngrok URL` from above (ie. `https://312a9670.ngrok.io`)
 
-Open the [Firebase Console](https://console.firebase.google.com) to create a new Project (or you can use an existing one) to use for storing temporary nonce date. Click `Add Project`, enter anything in the `Project Name` field then click `Create Project`. When you receive the 'Your new project is ready' confirmation, click `Continue`. Under the 'Get started by adding Firebase to your app', click the icon for `Web` < /> and then in that popup you will find your configuration information to use for `FIREBASE_API_KEY` (apiKey) and `FIREBASE_PROJECT_ID` (projectId).
+Open the [Firebase Console](https://console.firebase.google.com) to create a new Project (or you can use an existing one) to use for storing temporary nonce date. Click `Add Project`, enter anything in the `Project Name` field then click `Create Project`. When you receive the 'Your new project is ready' confirmation, click `Continue`.
+
+Go into the `Settings` for your new project (click gear icon) and click on `Service Accounts` tab. Click the `Generate new private key` button to download a JSON file containing your Service Account credentials.
+
+From that JSON file, copy the following to your env entries:
+`project_id` >> `FIREBASE_PROJECT_ID`
+`client_id` >> `FIREBASE_CLIENT_ID`
+`private_key_id` >> `FIREBASE_PRIVATE_KEY_ID`
+
+Grab the value of the key containing between `-----BEGIN PRIVATE KEY-----` and `-----END PRIVATE KEY-----\n` to set as the value of `FIREBASE_PRIVATE_KEY`.
+\*If deploying to Zeit Now instead of ngrok, make sure to replace `\n` in the string w/ `\\n` before storing as a secret.
 
 ---
 
