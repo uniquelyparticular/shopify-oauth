@@ -4758,10 +4758,10 @@ micro-dev@3.0.0:
     pretty-error "2.1.1"
     string-length "2.0.0"
 
-micro-redirect@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/micro-redirect/-/micro-redirect-1.0.0.tgz#aef703984f4ee46cfbbbfe2281cacc6f370d669e"
-  integrity sha1-rvcDmE9O5Gz7u/4igcrMbzcNZp4=
+micro-redirect@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/micro-redirect/-/micro-redirect-1.0.2.tgz#f2fa6686e5a404992abb1fe228341323af4699fd"
+  integrity sha512-lRx+OBr+5WFEoQ/f1R6FgPIprVGwf0HBda1DXvRUPtjGqzxAgTf243MfPFF6xQJ7G9YQR+C3QlZrCsRI9IkJVw==
 
 micro@9.3.4:
   version "9.3.4"
